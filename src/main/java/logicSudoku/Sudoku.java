@@ -2,8 +2,8 @@ package logicSudoku;
 
 public class Sudoku implements ISudoku {
     //! Atributos
-    int [][] tablero = new int[9][9];
-    boolean [][] celdasFijas = new boolean[9][9]; // celdas que no se pueden modificar
+    int[][] tablero = new int[9][9];
+    boolean[][] celdasFijas = new boolean[9][9]; // celdas que no se pueden modificar
 
     public Sudoku(int[][] tablero, boolean[][] celdasFijas) {
         this.tablero = tablero;
@@ -12,9 +12,17 @@ public class Sudoku implements ISudoku {
 
     @Override
     public void generarTablero(String dificultad) {
-
+// TODO: Llamar a GenerarSudoku ( mas adelante )
+        if (dificultad == null) {
+            throw new IllegalArgumentException("La dificultad no puede ser null.");
+        } else if (dificultad.equalsIgnoreCase("medio")) {
+            // TODO: GeneradorSudoku.generarMedio();
+        } else if (dificultad.equalsIgnoreCase("facil")) {
+            // TODO: GeneradorSudoku.generarFacil();
+        } else if (dificultad.equalsIgnoreCase("dificil")) {
+            // TODO: GeneradorSudoku.generarDificil();
+        }
     }
-
     @Override
     public boolean esMovimientoValido(int fila, int columna, int valor) {
         return false;
