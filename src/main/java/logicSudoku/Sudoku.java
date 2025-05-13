@@ -21,6 +21,8 @@ public class Sudoku implements ISudoku {
             // TODO: GeneradorSudoku.generarFacil();
         } else if (dificultad.equalsIgnoreCase("dificil")) {
             // TODO: GeneradorSudoku.generarDificil();
+        }else{
+            throw new IllegalArgumentException("Dificultad no valida: " + dificultad);
         }
     }
     @Override
