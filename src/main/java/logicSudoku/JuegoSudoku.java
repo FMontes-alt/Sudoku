@@ -4,28 +4,60 @@ import java.util.Scanner;
 
 public class JuegoSudoku {
     public static void main(String[] args) {
+        Sudoku juego = new Sudoku(new int[9][9], new boolean[9][9]);
         Scanner sc = new Scanner(System.in);
         int intentosRestantes = 5;
+        boolean exito = false;
 
         System.out.println("🎮 Bienvenido al Sudoku");
+
+        //! Selección de la dificultad
         System.out.print("Elige dificultad (facil / normal / dificil): ");
         String dificultad = sc.nextLine().toLowerCase();
-        boolean exito = false;
-        Sudoku juego = new Sudoku(new int[9][9], new boolean[9][9]);
+        do {
+            System.out.print("Elige dificultad (facil / normal / dificil): ");
+            dificultad = sc.nextLine().toLowerCase();
+
+            if (!dificultad.equals("facil") && !dificultad.equals("normal") && !dificultad.equals("dificil")) {
+                System.out.println("⚠️ Dificultad inválida. Intenta de nuevo.");
+            }
+        } while (!dificultad.equals("facil") && !dificultad.equals("normal") && !dificultad.equals("dificil"));
         juego.generarTablero(dificultad);
 
-
+        //!
         while (!juego.estaResuelto() && intentosRestantes > 0) {
             juego.mostrarTablero();
 
-            System.out.println("Fila (0-8): ");
-            int fila = sc.nextInt();
+            int fila;
+            do {
+                System.out.print("Fila (0-8): ");
+                while (!sc.hasNextInt()) {
+                    System.out.println("⚠️ Solo se permiten números entre 0 y 8.");
+                    sc.next(); // descarta entrada no numérica
+                }
+                fila = sc.nextInt();
+            } while (fila < 0 || fila > 8);
 
-            System.out.println("Columna (0-8): ");
-            int columna = sc.nextInt();
+            int columna;
+            do {
+                System.out.print("Col (0-8): ");
+                while (!sc.hasNextInt()) {
+                    System.out.println("⚠️ Solo se permiten números entre 0 y 8.");
+                    sc.next(); // descarta entrada no numérica
+                }
+                columna = sc.nextInt();
+            } while (columna < 0 || columna > 8);
 
-            System.out.println("Número (1-9): ");
-            int valor = sc.nextInt();
+
+            int valor;
+            do {
+                System.out.print("Valor (1-9): ");
+                while (!sc.hasNextInt()) {
+                    System.out.println("⚠️ Solo se permiten números entre 1 y 9.");
+                    sc.next(); // descarta entrada no numérica
+                }
+                valor = sc.nextInt();
+            } while (fila < 1 || fila > 9);
 
             exito = juego.colocarNumero(fila, columna, valor);
             if (!exito) {
