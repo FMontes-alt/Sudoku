@@ -29,10 +29,35 @@ public class Sudoku implements ISudoku {
         }
     }
 
-
     @Override
     public boolean esMovimientoValido(int fila, int columna, int valor) {
-        return false;
+        //! Verificación de la fila
+        for (int i = 0; i < 9; i++) {
+            if (tablero[fila][i] == valor) {
+                return false;
+            }
+        }
+        //! Verificación de columna
+        for (int i = 0; i < 9; i++) {
+            if (tablero[i][columna] == valor) {
+                return false;
+            }
+        }
+
+        //! Verificación subcuadrado 3X3
+        int inicioFila = (fila / 3) * 3;
+        int inicioColumna = (columna / 3) * 3;
+
+        for (int i = inicioFila; i < inicioFila + 3; i++) {
+            for (int j = inicioColumna; j < inicioColumna + 3; j++) {
+                if (tablero[i][j] == valor) {
+                    return false;
+                }
+            }
+        }
+
+        //! Todo OK
+        return true;
     }
 
     @Override
