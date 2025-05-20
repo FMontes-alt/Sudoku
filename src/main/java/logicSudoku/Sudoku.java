@@ -37,6 +37,7 @@ public class Sudoku implements ISudoku {
                 return false;
             }
         }
+
         //! Verificación de columna
         for (int i = 0; i < 9; i++) {
             if (tablero[i][columna] == valor) {
@@ -77,7 +78,24 @@ public class Sudoku implements ISudoku {
 
     @Override
     public boolean estaResuelto() {
-        return false;
+        for (int fila = 0; fila < 9; fila++) {
+            for (int columna = 0; columna < 9; columna++) {
+                int valor = tablero[fila][columna];
+
+                if (valor == 0) {
+                    return false; //! Hay casillas vacías
+                }
+
+                //? Quitar temporalmente las casillas para que no de error  esValido() no me lo compruebe con sigo mismo
+                tablero[fila][columna] = 0;
+                if (!esMovimientoValido(fila, columna, valor)) {
+                    tablero[fila][columna] = valor;
+                    return false;
+                }
+                tablero[fila][columna] = valor;
+            }
+        }
+        return true; //! Todo OK
     }
 
     @Override
