@@ -1,9 +1,13 @@
 package logicSudoku;
 
+
 public class Sudoku implements ISudoku {
     //! Atributos
-    int[][] tablero = new int[9][9];
-    boolean[][] celdasFijas = new boolean[9][9]; // celdas que no se pueden modificar
+    private int[][] tablero;
+    private boolean[][] celdasFijas = new boolean[9][9];// celdas que no se pueden modificar
+    int tam = 9;
+    private GenerarSudoku generador = new GenerarSudoku(tam);
+
 
     public Sudoku(int[][] tablero, boolean[][] celdasFijas) {
         this.tablero = tablero;
@@ -12,19 +16,20 @@ public class Sudoku implements ISudoku {
 
     @Override
     public void generarTablero(String dificultad) {
-// TODO: Llamar a GenerarSudoku ( mas adelante )
-        if (dificultad == null) {
-            throw new IllegalArgumentException("La dificultad no puede ser null.");
-        } else if (dificultad.equalsIgnoreCase("medio")) {
-            // TODO: GeneradorSudoku.generarMedio();
-        } else if (dificultad.equalsIgnoreCase("facil")) {
-            // TODO: GeneradorSudoku.generarFacil();
-        } else if (dificultad.equalsIgnoreCase("dificil")) {
-            // TODO: GeneradorSudoku.generarDificil();
-        }else{
-            throw new IllegalArgumentException("Dificultad no valida: " + dificultad);
+        if (dificultad == null || dificultad.isBlank()) {
+            throw new IllegalArgumentException("La dificultad no puede estar vacía.");
+        }
+        switch (dificultad.toLowerCase()) {
+            case "facil" -> tablero = generador.generarFacil();
+            case "normal" -> tablero = generador.generarNormal();
+            case "dificil" -> tablero = generador.generarDificil();
+            default -> throw new IllegalArgumentException("Dificultad desconocida: " + dificultad);
+
+            marcarCeldasFijas();
         }
     }
+
+
     @Override
     public boolean esMovimientoValido(int fila, int columna, int valor) {
         return false;
@@ -32,7 +37,17 @@ public class Sudoku implements ISudoku {
 
     @Override
     public boolean colocarNumero(int fila, int columna, int valor) {
-        return false;
+        if (celdasFijas[fila][columna]) {
+            System.out.println("❌ Error: no se puede modificar una celda fija.");
+            return false;
+        }
+        if (esMovimientoValido(fila, columna, valor)) {
+            tablero[fila][columna] = valor;
+            return true;
+        } else {
+            System.out.println("❌ Movimiento inválido. No se cumplen las reglas del Sudoku.");
+            return false;
+        }
     }
 
     @Override
@@ -45,3 +60,4 @@ public class Sudoku implements ISudoku {
 
     }
 }
+
