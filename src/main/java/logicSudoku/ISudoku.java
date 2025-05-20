@@ -9,5 +9,5 @@ public interface ISudoku {
 
     boolean estaResuelto();
 
-    void mostarTablero();
+    void mostrarTablero();
 }

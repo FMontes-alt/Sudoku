@@ -1,11 +1,10 @@
 package logicSudoku;
 
-
 public class Sudoku implements ISudoku {
     //! Atributos
     private int[][] tablero;
     private boolean[][] celdasFijas = new boolean[9][9];// celdas que no se pueden modificar
-    int tam = 9;
+    private final int tam = 9;
     private GenerarSudoku generador = new GenerarSudoku(tam);
 
 
@@ -24,9 +23,8 @@ public class Sudoku implements ISudoku {
             case "normal" -> tablero = generador.generarNormal();
             case "dificil" -> tablero = generador.generarDificil();
             default -> throw new IllegalArgumentException("Dificultad desconocida: " + dificultad);
-
-            marcarCeldasFijas();
         }
+        marcarCeldasFijas();
     }
 
     @Override
@@ -99,8 +97,38 @@ public class Sudoku implements ISudoku {
     }
 
     @Override
-    public void mostarTablero() {
+    public void mostrarTablero() {
+        System.out.println();
+        for (int fila = 0; fila < tam; fila++) {
+            if (fila % 3 == 0 && fila != 0) {
+                System.out.println("---------------------");
+            }
 
+            for (int columna = 0; columna < tam; columna++) {
+                if (columna % 3 == 0 && columna != 0) {
+                    System.out.print("| ");
+                }
+
+                int valor = tablero[fila][columna];
+                if (valor == 0) {
+                    System.out.print("_ ");
+                } else {
+                    System.out.print(valor + " ");
+                }
+            }
+            System.out.println();
+        }
+    }
+
+    private void marcarCeldasFijas() {
+        for (int fila = 0; fila < tam; fila++) {
+            for (int columna = 0; columna < tam; columna++) {
+                celdasFijas[fila][columna] = tablero[fila][columna] != 0;
+            }
+        }
     }
 }
+
+
+
 
