@@ -28,5 +28,11 @@ public class GenerarSudoku implements IGenerarSudoku {
         return new int[0][];
     }
 
+    private int[][] generarTableroCompleto(){
+        int [][] tablero = new int [tam][tam];
+        resolver(tablero);
+        return tablero;
+    }
+
 
 }
