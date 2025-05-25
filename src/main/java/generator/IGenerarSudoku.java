@@ -1,4 +1,4 @@
-package logicSudoku;
+package generator;
 
 public interface IGenerarSudoku {
 

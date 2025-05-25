@@ -1,4 +1,4 @@
-package logicSudoku;
+package interfaces;
 
 public interface ISudoku {
     void generarTablero(String dificultad);
@@ -10,4 +10,8 @@ public interface ISudoku {
     boolean estaResuelto();
 
     void mostrarTablero();
+
+    int[][] getTablero();
+
+    boolean[][] getCeldasFijas();
 }

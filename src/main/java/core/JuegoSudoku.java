@@ -1,4 +1,4 @@
-package logicSudoku;
+package core;
 
 import java.util.Scanner;
 
@@ -12,8 +12,7 @@ public class JuegoSudoku {
         System.out.println("🎮 Bienvenido al Sudoku");
 
         //! Selección de la dificultad
-        System.out.print("Elige dificultad (facil / normal / dificil): ");
-        String dificultad = sc.nextLine().toLowerCase();
+        String dificultad;
         do {
             System.out.print("Elige dificultad (facil / normal / dificil): ");
             dificultad = sc.nextLine().toLowerCase();
@@ -24,7 +23,7 @@ public class JuegoSudoku {
         } while (!dificultad.equals("facil") && !dificultad.equals("normal") && !dificultad.equals("dificil"));
         juego.generarTablero(dificultad);
 
-        //!
+        //! Intentos restantes y validaciones
         while (!juego.estaResuelto() && intentosRestantes > 0) {
             juego.mostrarTablero();
 
