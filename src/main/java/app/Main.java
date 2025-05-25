@@ -3,35 +3,32 @@ package app;
 import core.JuegoSudoku;
 import gui.SudokuGUI;
 
+import javax.swing.*;
 import java.util.Scanner;
 
+/**
+ * Clase principal que permite lanzar el juego en modo consola o gráfico.
+ */
 public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-
-        System.out.println("🎮 ¿Cómo quieres jugar?");
-        System.out.println("1. Consola");
-        System.out.println("2. Interfaz Gráfica (Swing)");
+        System.out.println("🧩 ¿Cómo quieres jugar?");
+        System.out.println("1. Modo consola");
+        System.out.println("2. Modo gráfico (Swing)");
         System.out.print("Elige una opción: ");
+        String opcion = sc.nextLine();
 
-        int opcion = 0;
-        while (opcion != 1 && opcion != 2) {
-            while (!sc.hasNextInt()) {
-                System.out.println("⚠️ Introduce 1 o 2.");
-                sc.next();
-            }
-            opcion = sc.nextInt();
-            if (opcion != 1 && opcion != 2) {
-                System.out.println("⚠️ Opción inválida. Elige 1 o 2.");
-            }
+        switch (opcion) {
+            case "1":
+                JuegoSudoku juego = new JuegoSudoku();
+                juego.iniciar();
+                break;
+            case "2":
+                // Asegura que Swing se lanza en el hilo correcto
+                SwingUtilities.invokeLater(() -> new SudokuGUI());
+                break;
+            default:
+                System.out.println("❌ Opción no válida. Ejecuta de nuevo el programa.");
         }
-
-        if (opcion == 1) {
-            JuegoSudoku.main(null); // ejecuta la versión consola
-        } else {
-            new SudokuGUI(); // lanza la GUI directamente
-        }
-
-        sc.close();
     }
 }

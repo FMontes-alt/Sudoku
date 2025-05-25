@@ -1,77 +1,69 @@
 package core;
 
+
 import java.util.Scanner;
 
+/**
+ * Clase que permite jugar al Sudoku por consola.
+ * Permite seleccionar dificultad, introducir números y ver el tablero.
+ */
 public class JuegoSudoku {
-    public static void main(String[] args) {
-        Sudoku juego = new Sudoku(new int[9][9], new boolean[9][9]);
-        Scanner sc = new Scanner(System.in);
-        int intentosRestantes = 5;
-        boolean exito = false;
 
-        System.out.println("🎮 Bienvenido al Sudoku");
+    private Sudoku sudoku;
+    private Scanner sc;
 
-        //! Selección de la dificultad
-        String dificultad;
-        do {
-            System.out.print("Elige dificultad (facil / normal / dificil): ");
-            dificultad = sc.nextLine().toLowerCase();
+    public JuegoSudoku() {
+        sudoku = new Sudoku();
+        sc = new Scanner(System.in);
+    }
 
-            if (!dificultad.equals("facil") && !dificultad.equals("normal") && !dificultad.equals("dificil")) {
-                System.out.println("⚠️ Dificultad inválida. Intenta de nuevo.");
+    public void iniciar() {
+        System.out.println("🎮 BIENVENIDO A SUDOKU (modo consola)");
+        System.out.println("--------------------------------------");
+
+        // Elegir dificultad
+        String dificultad = seleccionarDificultad();
+        sudoku.generarTablero(dificultad);
+
+        // Bucle principal
+        while (true) {
+            sudoku.mostrarTablero();
+
+            if (sudoku.estaResuelto()) {
+                System.out.println("🎉 ¡Enhorabuena! Has completado el Sudoku.");
+                break;
             }
-        } while (!dificultad.equals("facil") && !dificultad.equals("normal") && !dificultad.equals("dificil"));
-        juego.generarTablero(dificultad);
 
-        //! Intentos restantes y validaciones
-        while (!juego.estaResuelto() && intentosRestantes > 0) {
-            juego.mostrarTablero();
+            System.out.print("\nIntroduce la fila (1-9): ");
+            int fila = sc.nextInt() - 1;
 
-            int fila;
-            do {
-                System.out.print("Fila (0-8): ");
-                while (!sc.hasNextInt()) {
-                    System.out.println("⚠️ Solo se permiten números entre 0 y 8.");
-                    sc.next(); // descarta entrada no numérica
+            System.out.print("Introduce la columna (1-9): ");
+            int col = sc.nextInt() - 1;
+
+            System.out.print("Introduce el número (1-9): ");
+            int valor = sc.nextInt();
+
+            if (!sudoku.getCeldasFijas()[fila][col]) {
+                boolean exito = sudoku.colocarNumero(fila, col, valor);
+                if (!exito) {
+                    System.out.println("❌ Movimiento inválido. Revisa las reglas.");
                 }
-                fila = sc.nextInt();
-            } while (fila < 0 || fila > 8);
-
-            int columna;
-            do {
-                System.out.print("Col (0-8): ");
-                while (!sc.hasNextInt()) {
-                    System.out.println("⚠️ Solo se permiten números entre 0 y 8.");
-                    sc.next(); // descarta entrada no numérica
-                }
-                columna = sc.nextInt();
-            } while (columna < 0 || columna > 8);
-
-
-            int valor;
-            do {
-                System.out.print("Valor (1-9): ");
-                while (!sc.hasNextInt()) {
-                    System.out.println("⚠️ Solo se permiten números entre 1 y 9.");
-                    sc.next(); // descarta entrada no numérica
-                }
-                valor = sc.nextInt();
-            } while (fila < 1 || fila > 9);
-
-            exito = juego.colocarNumero(fila, columna, valor);
-            if (!exito) {
-                intentosRestantes--;
-                System.out.println("⚠️ Movimiento inválido. Te quedan " + intentosRestantes + " intentos.");
+            } else {
+                System.out.println("⛔ Esa celda es fija, no puedes modificarla.");
             }
-        }
 
-        if (juego.estaResuelto()) {
-            juego.mostrarTablero();
-            System.out.println("🎉 ¡Has completado el Sudoku!");
-        } else {
-            System.out.println("💥 Has agotado tus intentos. Fin del juego.");
+            System.out.println();
         }
+    }
 
-        sc.close();
+    private String seleccionarDificultad() {
+        while (true) {
+            System.out.print("Selecciona dificultad (facil / medio / dificil): ");
+            String dif = sc.next().toLowerCase();
+            if (dif.equals("facil") || dif.equals("medio") || dif.equals("dificil")) {
+                return dif;
+            }
+            System.out.println("❌ Opción no válida. Intenta de nuevo.");
+        }
     }
 }

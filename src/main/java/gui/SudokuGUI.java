@@ -1,5 +1,4 @@
-// Proyecto Maven reestructurado
-package gui;
+package logicSudoku;
 
 import core.Sudoku;
 
@@ -7,92 +6,171 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Timer;
+import java.util.TimerTask;
 
-/**
- * Interfaz gráfica para jugar al Sudoku.
- * Controla la visualización del tablero y permite validar movimientos.
- */
 public class SudokuGUI extends JFrame {
-    private static final long serialVersionUID = 1L;
-
-    private JTextField[][] celdas;
-    private Sudoku sudoku;
+    private final JTextField[][] campos = new JTextField[9][9];
+    private Sudoku juego = new Sudoku();
+    private int intentosRestantes = 5;
+    private final JLabel intentosLabel = new JLabel("Intentos restantes: 5");
+    private final JComboBox<String> selectorDificultad = new JComboBox<>(new String[]{"facil", "normal", "dificil"});
+    private final JButton btnGenerar = new JButton("🆕 Generar nuevo");
+    private final JButton btnComprobar = new JButton("✔️ Comprobar");
+    private final JButton btnReiniciar = new JButton("🔁 Reiniciar");
+    private final JButton btnResolver = new JButton("⚡ Resolver");
+    private Timer timer;
+    private int segundos = 0;
+    private final JLabel tiempoLabel = new JLabel("00:00:00");
 
     public SudokuGUI() {
-        sudoku = new Sudoku();
-        int[][] tableroInicial = sudoku.getTablero();
-
-        setTitle("Sudoku 2.0");
+        setTitle("Sudoku Fran Edition");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(650, 750);
+        setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        JPanel panelTablero = new JPanel(new GridLayout(9, 9));
-        celdas = new JTextField[9][9];
+        JPanel panelCentral = new JPanel(new GridLayout(9, 9)) {
+            @Override
+            public void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.setColor(Color.BLACK);
+                for (int i = 0; i <= 9; i++) {
+                    if (i % 3 == 0) {
+                        ((Graphics2D) g).setStroke(new BasicStroke(3));
+                    } else {
+                        ((Graphics2D) g).setStroke(new BasicStroke(1));
+                    }
+                    g.drawLine(0, i * getHeight() / 9, getWidth(), i * getHeight() / 9);
+                    g.drawLine(i * getWidth() / 9, 0, i * getWidth() / 9, getHeight());
+                }
+            }
+        };
 
         for (int fila = 0; fila < 9; fila++) {
             for (int col = 0; col < 9; col++) {
                 JTextField campo = new JTextField();
                 campo.setHorizontalAlignment(JTextField.CENTER);
-
-                int valor = tableroInicial[fila][col];
-                if (valor != 0) {
-                    campo.setText(String.valueOf(valor));
-                    campo.setEditable(false);
-                    campo.setBackground(Color.LIGHT_GRAY);
-                } else {
-                    campo.setText("");
-                }
-
-                celdas[fila][col] = campo;
-                panelTablero.add(campo);
+                campo.setFont(new Font("SansSerif", Font.BOLD, 18));
+                campos[fila][col] = campo;
+                panelCentral.add(campo);
             }
         }
 
-        JButton botonValidar = new JButton("Validar");
-        botonValidar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                validarTablero();
-            }
+        JPanel panelSuperior = new JPanel();
+        panelSuperior.add(new JLabel("Dificultad: "));
+        panelSuperior.add(selectorDificultad);
+        panelSuperior.add(btnGenerar);
+        panelSuperior.add(btnReiniciar);
+        panelSuperior.add(btnResolver);
+        panelSuperior.add(intentosLabel);
+
+        JPanel panelInferior = new JPanel();
+        panelInferior.add(btnComprobar);
+        panelInferior.add(new JLabel("  Tiempo: "));
+        panelInferior.add(tiempoLabel);
+
+        add(panelSuperior, BorderLayout.NORTH);
+        add(panelCentral, BorderLayout.CENTER);
+        add(panelInferior, BorderLayout.SOUTH);
+
+        btnGenerar.addActionListener(e -> {
+            generarTablero();
+            iniciarTemporizador();
         });
 
-        add(panelTablero, BorderLayout.CENTER);
-        add(botonValidar, BorderLayout.SOUTH);
+        btnReiniciar.addActionListener(e -> {
+            generarTablero();
+            iniciarTemporizador();
+        });
 
-        setSize(500, 500);
-        setLocationRelativeTo(null);
+        btnComprobar.addActionListener(e -> comprobarTablero());
+
+        btnResolver.addActionListener(e -> {
+            juego = new Sudoku();
+            juego.generarTablero((String) selectorDificultad.getSelectedItem());
+            juego.getGenerador().resolver(juego.getTablero());
+            actualizarTableroDesdeModelo();
+        });
+
         setVisible(true);
     }
 
-    /**
-     * Valida el tablero leyendo el contenido de las celdas y mostrando errores.
-     */
-    private void validarTablero() {
-        boolean valido = true;
+    private void generarTablero() {
+        juego = new Sudoku();
+        String dificultad = (String) selectorDificultad.getSelectedItem();
+        juego.generarTablero(dificultad);
+        intentosRestantes = 5;
+        intentosLabel.setText("Intentos restantes: 5");
+        actualizarTableroDesdeModelo();
+    }
+
+    private void actualizarTableroDesdeModelo() {
+        int[][] tablero = juego.getTablero();
+        boolean[][] fijas = juego.getCeldasFijas();
 
         for (int fila = 0; fila < 9; fila++) {
             for (int col = 0; col < 9; col++) {
-                String texto = celdas[fila][col].getText().trim();
-                if (!texto.matches("[1-9]")) {
-                    celdas[fila][col].setBackground(Color.PINK);
-                    valido = false;
-                    continue;
-                }
-
-                int valor = Integer.parseInt(texto);
-                if (!sudoku.esMovimientoValido(fila, col, valor)) {
-                    celdas[fila][col].setBackground(Color.RED);
-                    valido = false;
+                campos[fila][col].setEditable(!fijas[fila][col]);
+                if (tablero[fila][col] != 0) {
+                    campos[fila][col].setText(String.valueOf(tablero[fila][col]));
+                    campos[fila][col].setForeground(Color.BLACK);
+                    campos[fila][col].setBackground(Color.WHITE);
                 } else {
-                    celdas[fila][col].setBackground(Color.WHITE);
+                    campos[fila][col].setText("");
+                    campos[fila][col].setForeground(Color.BLUE);
+                    campos[fila][col].setBackground(Color.WHITE);
+                }
+            }
+        }
+    }
+
+    private void comprobarTablero() {
+        for (int fila = 0; fila < 9; fila++) {
+            for (int col = 0; col < 9; col++) {
+                if (!juego.getCeldasFijas()[fila][col]) {
+                    String texto = campos[fila][col].getText();
+                    if (!texto.isEmpty()) {
+                        try {
+                            int valor = Integer.parseInt(texto);
+                            if (valor < 1 || valor > 9 || !juego.esMovimientoValido(fila, col, valor)) {
+                                campos[fila][col].setBackground(Color.PINK);
+                                intentosRestantes--;
+                            } else {
+                                campos[fila][col].setBackground(Color.WHITE);
+                                juego.colocarNumero(fila, col, valor);
+                            }
+                        } catch (NumberFormatException ex) {
+                            campos[fila][col].setBackground(Color.PINK);
+                            intentosRestantes--;
+                        }
+                    }
                 }
             }
         }
 
-        if (valido) {
-            JOptionPane.showMessageDialog(this, "✅ Tablero válido");
-        } else {
-            JOptionPane.showMessageDialog(this, "❌ Hay errores en el tablero");
+        intentosLabel.setText("Intentos restantes: " + intentosRestantes);
+
+        if (intentosRestantes <= 0) {
+            JOptionPane.showMessageDialog(this, "Has perdido. Te quedaste sin intentos.");
+        } else if (juego.estaResuelto()) {
+            JOptionPane.showMessageDialog(this, "¡Felicidades! Has completado el Sudoku.");
         }
+    }
+
+    private void iniciarTemporizador() {
+        if (timer != null) timer.cancel();
+        segundos = 0;
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                segundos++;
+                int horas = segundos / 3600;
+                int minutos = (segundos % 3600) / 60;
+                int seg = segundos % 60;
+                tiempoLabel.setText(String.format("%02d:%02d:%02d", horas, minutos, seg));
+            }
+        }, 0, 1000);
     }
 }
