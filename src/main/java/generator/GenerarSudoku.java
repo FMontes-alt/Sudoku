@@ -28,7 +28,7 @@ public class GenerarSudoku {
      *
      * @return Tablero 9x9 con valores iniciales y huecos.
      */
-    public int[][] generarMedio() {
+    public int[][] generarNormal() {
         return generarConDificultad(40);
     }
 
@@ -51,7 +51,7 @@ public class GenerarSudoku {
      */
     private int[][] generarConDificultad(int vacias) {
         int[][] tablero = new int[9][9];
-        resolverSudoku(tablero); // Genera un tablero completo válido
+        resolver(tablero); // Genera un tablero completo válido
         eliminarCeldas(tablero, vacias);
         return tablero;
     }
@@ -63,24 +63,22 @@ public class GenerarSudoku {
      * @param tablero Tablero a rellenar
      * @return true si se ha podido generar una solución válida
      */
-    private boolean resolverSudoku(int[][] tablero) {
+    public boolean resolver(int[][] tablero) {
         for (int fila = 0; fila < 9; fila++) {
             for (int col = 0; col < 9; col++) {
                 if (tablero[fila][col] == 0) {
-                    for (int num = 1; num <= 9; num++) {
+                    for (int num : numerosAleatorios()) {
                         if (esValido(tablero, fila, col, num)) {
                             tablero[fila][col] = num;
-                            if (resolverSudoku(tablero)) {
-                                return true;
-                            }
-                            tablero[fila][col] = 0; // retrocede
+                            if (resolver(tablero)) return true;
+                            tablero[fila][col] = 0;
                         }
                     }
-                    return false; // no se pudo resolver con ningún número
+                    return false;
                 }
             }
         }
-        return true; // tablero completo
+        return true;
     }
 
     /**
@@ -128,5 +126,17 @@ public class GenerarSudoku {
                 eliminadas++;
             }
         }
+    }
+
+    private int[] numerosAleatorios() {
+        int[] numeros = {1,2,3,4,5,6,7,8,9};
+        Random rand = new Random();
+        for (int i = numeros.length - 1; i > 0; i--) {
+            int j = rand.nextInt(i + 1);
+            int temp = numeros[i];
+            numeros[i] = numeros[j];
+            numeros[j] = temp;
+        }
+        return numeros;
     }
 }

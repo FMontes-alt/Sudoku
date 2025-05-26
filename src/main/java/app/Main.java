@@ -1,7 +1,6 @@
 package app;
 
 import core.JuegoSudoku;
-import gui.SudokuGUI;
 
 import javax.swing.*;
 import java.util.Scanner;
@@ -25,7 +24,7 @@ public class Main {
                 break;
             case "2":
                 // Asegura que Swing se lanza en el hilo correcto
-                SwingUtilities.invokeLater(() -> new SudokuGUI());
+                SwingUtilities.invokeLater(() -> new gui.SudokuGUI());
                 break;
             default:
                 System.out.println("❌ Opción no válida. Ejecuta de nuevo el programa.");

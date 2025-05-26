@@ -66,4 +66,8 @@ public class JuegoSudoku {
             System.out.println("❌ Opción no válida. Intenta de nuevo.");
         }
     }
+
+    public Sudoku getSudoku() {
+        return sudoku;
+    }
 }
